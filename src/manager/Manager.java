@@ -55,10 +55,10 @@ public class Manager {
     }
 
     public void deleteAllSubtasks() {
-        ArrayList<Epic> epic = getAllEpics();
-        for (Epic epic1 : epic) {
-            epic1.getSubtasksInEpic().clear();
-            changeStatusEpic(epic1);
+        ArrayList<Epic> epics = getAllEpics();
+        for (Epic epic : epics) {
+            epic.getSubtasksInEpic().clear();
+            changeStatusEpic(epic);
         }
         subtasks.clear();
     }
@@ -100,16 +100,18 @@ public class Manager {
     }
 
     public void removeByIdEpic(Integer id) {
-        for (Integer i : epics.get(id).getSubtasksInEpic()) {
-            subtasks.remove(i);
+        for (Integer subtaskId : epics.get(id).getSubtasksInEpic()) {
+            subtasks.remove(subtaskId);
         }
         epics.get(id).getSubtasksInEpic().clear();
         epics.remove(id);
     }
 
     public void removeByIdSub(Integer id) {
-        epics.get(subtasks.get(id).getEpicId()).getSubtasksInEpic().remove(id);
+        Epic epic = epics.get(subtasks.get(id).getEpicId());
+        epic.getSubtasksInEpic().remove(id);
         subtasks.remove(id);
+        changeStatusEpic(epic);
     }
 
     public ArrayList<Subtask> getSubtasksById(Integer epicId) {
@@ -120,7 +122,7 @@ public class Manager {
         return Subtask;
     }
 
-    public String changeStatusEpic(Epic epic) {
+    private String changeStatusEpic(Epic epic) {
         epic.setStatus("IN_PROGRESS");
         if (epic.getSubtasksInEpic().isEmpty()) {
             epic.setStatus("NEW");
