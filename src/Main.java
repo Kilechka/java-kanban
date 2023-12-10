@@ -71,7 +71,6 @@ public class Main {
         System.out.println(task1.getStatus());
         System.out.println(manager.updateTask(task1).getName());
 
-
        /* System.out.println("\nУдаляем 1 подзадачу 1ого эпика");
         manager.removeByIdSub(4);
         System.out.println("Список подзадач 1ого эпика");
@@ -102,7 +101,6 @@ public class Main {
             System.out.println(subtask.getName() + " - " + subtask.getDescription());
         }
 */
-
         task1.setStatus("DONE");
 
     }
