@@ -43,4 +43,16 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Task task = (Task) obj;
+        return name.equals(task.name) && id == task.id && description.equals(task.description) && status.equals(task.status);
+    }
 }
