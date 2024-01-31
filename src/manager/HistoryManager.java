@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public interface HistoryManager {
 
-    public <T extends Task> void add(T task);
+    void add(Task task);
 
-    public ArrayList<Task> getHistory();
+    ArrayList<Task> getHistory();
 
 }

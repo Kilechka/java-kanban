@@ -43,7 +43,7 @@ public interface TaskManager {
 
     ArrayList<Task> getHistory();
 
-    public ArrayList<Subtask> getSubtasksById(Integer epicId);
+    ArrayList<Subtask> getSubtasksById(Integer epicId);
 }
 
 
