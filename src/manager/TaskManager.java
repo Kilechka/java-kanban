@@ -39,8 +39,6 @@ public interface TaskManager {
 
     void removeByIdSub(Integer id);
 
-    String changeStatusEpic(Epic epic);
-
     ArrayList<Task> getHistory();
 
     ArrayList<Subtask> getSubtasksById(Integer epicId);

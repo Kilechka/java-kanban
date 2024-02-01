@@ -11,36 +11,11 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
-    /*
-Читала по поводу конструктора InMemoryTaskManager в пачке. Там ребятам ревьюер писал о том, что конструктор нужен
-Цитирую другого ревьюера:
-"При такой реализации менджер истории в оперативной
-памяти жестко зашивается в менеджер задач. А если
-понадобится сохранять историю в отдельный файл или базу
-данных. Стоит использовать подход к инициализации поля
-класса через аргумент конструктора, это называется
-"внедрением зависимости" (dependency injection). Те нужно
-немного обновить этот класс и класс Managers."
-
-Могу вас попросить прояснить данный момент?
-Заранее спасибо!
-
-Ещё у меня вопросы по поводу данных тестов:
-проверьте, что объект Epic нельзя добавить в самого себя в виде подзадачи;
-проверьте, что объект Subtask нельзя сделать своим же эпиком;
-
-Как я могу это проверить, если я не могу создать подзадачу, отправив туда объект эпика?
-В таком случае будет ошибка и код не будет работать.
-На эту тему я тоже читала в пачке:
-ребята писали, что попросту пропустили эти пункты
-
-     */
-
 
     private static TaskManager manager = Managers.getDefault();
 
     @BeforeEach
-    public void BeforeEach() {
+    public void beforeEach() {
         manager = Managers.getDefault();
         manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description"));
         manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description"));
@@ -79,21 +54,16 @@ class InMemoryTaskManagerTest {
     @Test
     public void shouldRemoveAllTasks() {
         manager.deleteAllSubtasks();
-        assertNull(manager.getAllSubtasks(), "Не получилось удалить все подчадачи");
+        boolean deleteSub = manager.getAllSubtasks().size() == 0;
+        assertTrue(deleteSub, "Не получилось удалить все подзадачи");
+
         manager.deleteAllTasks();
-        assertNull(manager.getAllTasks(), "Не получилось удалить все задачи");
+        boolean deleteTask = manager.getAllTasks().size() == 0;
+        assertTrue(deleteTask, "Не получилось удалить все подзадачи");
+
         manager.deleteAllEpics();
-        assertNull(manager.getAllEpics(), "Не получилось удалить все эпики");
-    }
-
-    @Test
-    public void shouldNotAddEpicInEpic() {
-        Epic epic = new Epic("Epic", "Epic description");
-        manager.createNewEpic(epic);
-        assertNotNull(manager.getAllEpics());
-
-        //  manager.createNewSubtask(epic, epic.getId());
-        //  так сделать не получится
+        boolean deleteEpic = manager.getAllEpics().size() == 0;
+        assertTrue(deleteEpic, "Не получилось удалить все подзадачи");
     }
 
     @Test
@@ -101,7 +71,8 @@ class InMemoryTaskManagerTest {
         manager.deleteAllSubtasks();
         Subtask sub = new Subtask("Sub", "Sub description", 10);
         assertNull(sub.getId(), "Подзадача с несуществующим id эпика была создана");
-        assertNull(manager.getAllSubtasks(), "Подзадача с несуществующим id эпика была создана");
+        boolean getSub = manager.getAllSubtasks().size() == 0;
+        assertTrue(getSub, "Подзадача с несуществующим id эпика была создана");
     }
 
     @Test
@@ -185,6 +156,6 @@ class InMemoryTaskManagerTest {
         assertNull(manager.getById(1));
         assertNull(manager.getById(4));
         assertNull(manager.getById(3));
-        
+
     }
 }

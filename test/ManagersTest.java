@@ -5,14 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
 
-
     @Test
-    void ShouldGetDefault() {
+    void shouldGetDefault() {
         assertNotNull(Managers.getDefault());
     }
 
     @Test
-    void ShouldGetDefaultHistory() {
+    void shouldGetDefaultHistory() {
         assertNotNull(Managers.getDefaultHistory());
     }
 }
