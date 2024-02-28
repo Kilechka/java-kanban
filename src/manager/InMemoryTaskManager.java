@@ -15,7 +15,6 @@ public class InMemoryTaskManager implements TaskManager {
     private Integer id = 1;
     private HistoryManager historyManager = Managers.getDefaultHistory();
 
-
     @Override
     public Task createNewTask(Task task) {
         task.setId(createId());
