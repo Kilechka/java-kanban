@@ -16,4 +16,9 @@ public class Epic extends Task {
     public void setSubtasksInEpic(Integer id) {
         subtasksInEpic.add(id);
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

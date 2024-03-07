@@ -5,6 +5,7 @@ public class Task {
     private String name;
     private String description;
     private String status;
+    private TasksType type;
 
     public Task(String name, String description) {
         this.name = name;
@@ -40,6 +41,14 @@ public class Task {
         this.name = name;
     }
 
+    public void setType(TasksType type) {
+        this.type = type;
+    }
+
+    public TasksType getType() {
+        return type;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -54,5 +63,11 @@ public class Task {
         }
         Task task = (Task) obj;
         return name.equals(task.name) && id == task.id && description.equals(task.description) && status.equals(task.status);
+    }
+
+    @Override
+    public String toString() {
+        String taskToString = id + ", " + type + ", " + name + ", " + status + ", " + description;
+        return taskToString;
     }
 }
