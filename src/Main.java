@@ -5,7 +5,7 @@ import model.Subtask;
 import model.Task;
 
 public class Main {
-
+    
     public static void main(String[] args) {
 
         TaskManager manager = Managers.getDefault();
@@ -24,15 +24,6 @@ public class Main {
         manager.createNewEpic(epic2);
         Subtask subtask1Epic2 = new Subtask("Купить книгу на английском", "В книжном сейчас распродажа", 6);
         manager.createNewSubtask(subtask1Epic2);
-        manager.getById(1);
-        manager.getById(2);
-        manager.getById(3);
-        manager.getById(4);
-        manager.getById(5);
-        manager.getById(6);
-        manager.getById(7);
-        manager.getById(5);
-        manager.getById(5);
         printAllTasks(manager);
     }
 

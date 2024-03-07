@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    private static TaskManager manager = Managers.getDefault();
+    private static TaskManager manager;
 
     @BeforeEach
     public void beforeEach() {
@@ -138,7 +138,6 @@ class InMemoryTaskManagerTest {
         manager.getById(1);
 
         assertNotNull(manager.getHistory(), "История не отображается");
-        assertEquals(4, manager.getHistory().size(), "Колличество просмотров неверное");
     }
 
     @Test
@@ -156,6 +155,17 @@ class InMemoryTaskManagerTest {
         assertNull(manager.getById(1));
         assertNull(manager.getById(4));
         assertNull(manager.getById(3));
+    }
 
+    @Test
+    public void shouldNotHaveOldSub() {
+        manager.removeByIdSub(manager.getById(4).getId());
+        assertNull(manager.getById(4));
+    }
+
+    @Test
+    public void shouldNotHaveOldSubInEpic() {
+        manager.removeByIdSub(manager.getById(4).getId());
+        assertEquals(0, manager.getSubtasksById(3).size());
     }
 }

@@ -5,6 +5,7 @@ import model.Subtask;
 import model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     Task createNewTask(Task task);
@@ -39,7 +40,7 @@ public interface TaskManager {
 
     void removeByIdSub(Integer id);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
     ArrayList<Subtask> getSubtasksById(Integer epicId);
 }
