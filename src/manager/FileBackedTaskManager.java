@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static model.TasksType.EPIC;
+import static model.TasksType.TASK;
+
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File file;
-    private static CSVTaskFormatter formatter = new CSVTaskFormatter();
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -23,33 +25,42 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
-        HistoryManager historyManager = Managers.getDefaultHistory();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line;
             Boolean isHistory = false;
+            bufferedReader.readLine();
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.isEmpty()) {
                     isHistory = true;
                     continue;
                 }
                 if (!isHistory) {
-                    Task task = formatter.fromString(line);
-                    if (task instanceof Subtask) {
-                        fileBackedTaskManager.createNewSubtask((Subtask) task);
-                    } else if (task instanceof Epic) {
-                        fileBackedTaskManager.createNewEpic((Epic) task);
+                    Task task = CSVTaskFormatter.fromString(line);
+                    if (task.getType() == TASK) {
+                        fileBackedTaskManager.tasks.put(task.getId(), task);
+                    } else if (task.getType() == EPIC) {
+                        fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
                     } else {
-                        fileBackedTaskManager.createNewTask(task);
+                        fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) task);
                     }
                 } else {
-                    List<Integer> taskId = formatter.historyFromString(line);
+                    if (line.isEmpty()) {
+                        continue;
+                    }
+                    List<Integer> taskId = CSVTaskFormatter.historyFromString(line);
                     for (Integer id : taskId) {
-                        historyManager.add(fileBackedTaskManager.getById(id));
+                        if (fileBackedTaskManager.epics.get(id) != null) {
+                            fileBackedTaskManager.historyManager.add(fileBackedTaskManager.epics.get(id));
+                        } else if (fileBackedTaskManager.subtasks.get(id) != null) {
+                            fileBackedTaskManager.historyManager.add(fileBackedTaskManager.subtasks.get(id));
+                        } else {
+                            fileBackedTaskManager.historyManager.add(fileBackedTaskManager.tasks.get(id));
+                        }
                     }
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Ошибка при загрузке данных из файла", e);
+            throw new ManagerSaveException("Ошибка при загрузке данных из файла");
         }
         return fileBackedTaskManager;
     }
@@ -145,7 +156,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(file))) {
-            ArrayList<String> allTasks = formatter.makeList(getAllTasks(), getAllEpics(), getAllSubtasks());
+            ArrayList<String> allTasks = CSVTaskFormatter.makeList(getAllTasks(), getAllEpics(), getAllSubtasks());
+            bufferWriter.write("id, type, name, status, description, epicId");
+            bufferWriter.newLine();
             for (String task : allTasks) {
                 bufferWriter.write(task);
                 bufferWriter.newLine();
@@ -156,7 +169,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 bufferWriter.write(", ");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Ошибка при загрузке данных в файл");
         }
     }
 }

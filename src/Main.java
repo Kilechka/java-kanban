@@ -31,7 +31,7 @@ public class Main {
         manager.getById(2);
         manager.getById(3);
 
-*/
+ */
 
         File file = new File("resources/history.csv");
         FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(file);

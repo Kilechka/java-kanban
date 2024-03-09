@@ -15,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     final HashMap<Integer, Epic> epics = new HashMap<>();
     final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private Integer id = 1;
-    private HistoryManager historyManager = Managers.getDefaultHistory();
+    protected HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public Task createNewTask(Task task) {

@@ -3,6 +3,7 @@ package manager;
 import model.Epic;
 import model.Task;
 import model.Subtask;
+import model.TasksType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,28 +16,36 @@ public class CSVTaskFormatter {
 
     static Task fromString(String value) {
         String[] values = value.split(", ");
-        String typeString = values[1];
-        switch (typeString) {
-            case "TASK":
-                Task task = new Task(values[2], values[4]);
+        int id = Integer.parseInt(values[0]);
+        TasksType tasksType = TasksType.valueOf(values[1]);
+        String name = values[2];
+        String status = values[3];
+        String description = values[4];
+        int epicId = 0;
+        if (values.length == 6) {
+            epicId = Integer.parseInt(values[5]);
+        }
+        switch (tasksType) {
+            case TASK:
+                Task task = new Task(name, description);
                 task.setType(TASK);
-                task.setId(Integer.valueOf(values[0]));
-                task.setStatus(values[3]);
+                task.setId(id);
+                task.setStatus(status);
                 return task;
-            case "EPIC":
-                Epic epic = new Epic(values[2], values[4]);
+            case EPIC:
+                Epic epic = new Epic(name, description);
                 epic.setType(EPIC);
-                epic.setId(Integer.valueOf(values[0]));
-                epic.setStatus(values[3]);
+                epic.setId(id);
+                epic.setStatus(status);
                 return epic;
-            case "SUBTASK":
-                Subtask subtask = new Subtask(values[2], values[4], Integer.valueOf(values[5]));
+            case SUBTASK:
+                Subtask subtask = new Subtask(name, description, epicId);
                 subtask.setType(SUBTASK);
-                subtask.setId(Integer.valueOf(values[0]));
-                subtask.setStatus(values[3]);
+                subtask.setId(id);
+                subtask.setStatus(status);
                 return subtask;
             default:
-                throw new IllegalArgumentException("Неизвестный тип задачи: " + typeString);
+                throw new IllegalArgumentException("Неизвестный тип задачи: " + tasksType);
         }
     }
 
