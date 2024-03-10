@@ -1,6 +1,6 @@
 id, type, name, status, description, epicId
-1, EPIC, N, NEW, ggg,
-2, TASK, N, NEW, ggg,
-3, SUBTASK, N, NEW, ggg, 1
+1, TASK, Test addNewTask, NEW, Test addNewTask description
+2, TASK, Test addNewTask, NEW, Test addNewTask description
+3, EPIC, Test addNewTask, NEW, Test addNewTask description
 
-1, 2, 3
+1, 2

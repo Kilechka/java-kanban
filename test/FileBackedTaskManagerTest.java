@@ -23,7 +23,7 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void SaveAndLoadEmptyFile() throws IOException {
-        taskManager.testSave();
+        taskManager.save();
 
         FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(0, loadedTaskManager.getAllTasks().size());
@@ -39,12 +39,32 @@ public class FileBackedTaskManagerTest {
         taskManager.createNewTask(task2);
         taskManager.createNewEpic(epic1);
 
-        taskManager.testSave();
+        taskManager.save();
 
         FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(1, loadedTaskManager.getAllEpics().size());
         assertTrue(loadedTaskManager.getAllTasks().contains(task1));
         assertTrue(loadedTaskManager.getAllTasks().contains(task2));
         assertTrue(loadedTaskManager.getAllEpics().contains(epic1));
+        assertEquals(taskManager.getAllTasks(), loadedTaskManager.getAllTasks());
+        assertEquals(taskManager.getAllEpics(), loadedTaskManager.getAllEpics());
+        assertEquals(taskManager.getAllSubtasks(), loadedTaskManager.getAllSubtasks());
+    }
+
+    @Test
+    void shouldSaveHistory() {
+        Task task1 = new Task("Task 1", "Description 1");
+        Epic epic1 = new Epic("Epic 1", "Description 3");
+
+        taskManager.createNewTask(task1);
+        taskManager.createNewEpic(epic1);
+        taskManager.getById(1);
+        taskManager.getById(2);
+        taskManager.getById(1);
+
+        FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(file);
+
+        assertEquals(taskManager.getHistory(), loadedTaskManager.getHistory());
+        assertEquals(loadedTaskManager.getHistory().get(1).getId(), 1);
     }
 }

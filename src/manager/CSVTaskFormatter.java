@@ -8,10 +8,6 @@ import model.TasksType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static model.TasksType.TASK;
-import static model.TasksType.EPIC;
-import static model.TasksType.SUBTASK;
-
 public class CSVTaskFormatter {
 
     static Task fromString(String value) {
@@ -28,19 +24,16 @@ public class CSVTaskFormatter {
         switch (tasksType) {
             case TASK:
                 Task task = new Task(name, description);
-                task.setType(TASK);
                 task.setId(id);
                 task.setStatus(status);
                 return task;
             case EPIC:
                 Epic epic = new Epic(name, description);
-                epic.setType(EPIC);
                 epic.setId(id);
                 epic.setStatus(status);
                 return epic;
             case SUBTASK:
                 Subtask subtask = new Subtask(name, description, epicId);
-                subtask.setType(SUBTASK);
                 subtask.setId(id);
                 subtask.setStatus(status);
                 return subtask;

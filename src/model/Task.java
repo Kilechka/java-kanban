@@ -1,11 +1,11 @@
 package model;
 
 public class Task {
-    private Integer id;
-    private String name;
-    private String description;
-    private String status;
-    private TasksType type;
+
+    protected Integer id;
+    protected String name;
+    protected String description;
+    protected String status;
 
     public Task(String name, String description) {
         this.name = name;
@@ -41,12 +41,8 @@ public class Task {
         this.name = name;
     }
 
-    public void setType(TasksType type) {
-        this.type = type;
-    }
-
     public TasksType getType() {
-        return type;
+        return TasksType.TASK;
     }
 
     public void setDescription(String description) {
@@ -67,7 +63,7 @@ public class Task {
 
     @Override
     public String toString() {
-        String taskToString = id + ", " + type + ", " + name + ", " + status + ", " + description;
+        String taskToString = id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description;
         return taskToString;
     }
 }

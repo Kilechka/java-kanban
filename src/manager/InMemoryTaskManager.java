@@ -3,7 +3,6 @@ package manager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-import model.TasksType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,16 +10,15 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    final HashMap<Integer, Task> tasks = new HashMap<>();
-    final HashMap<Integer, Epic> epics = new HashMap<>();
-    final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected HashMap<Integer, Task> tasks = new HashMap<>();
+    protected HashMap<Integer, Epic> epics = new HashMap<>();
+    protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private Integer id = 1;
     protected HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public Task createNewTask(Task task) {
         task.setId(createId());
-        task.setType(TasksType.TASK);
         tasks.put(task.getId(), task);
         return task;
     }
@@ -28,7 +26,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic createNewEpic(Epic epic) {
         epic.setId(createId());
-        epic.setType(TasksType.EPIC);
         epics.put(epic.getId(), epic);
         return epic;
     }
@@ -36,7 +33,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createNewSubtask(Subtask subtask) {
         subtask.setId(createId());
-        subtask.setType(TasksType.SUBTASK);
         subtasks.put(subtask.getId(), subtask);
         epics.get(subtask.getEpicId()).setSubtasksInEpic(subtask.getId());
         changeStatusEpic(epics.get(subtask.getEpicId()));
