@@ -1,10 +1,11 @@
 package model;
 
 public class Task {
-    private Integer id;
-    private String name;
-    private String description;
-    private String status;
+
+    protected Integer id;
+    protected String name;
+    protected String description;
+    protected String status;
 
     public Task(String name, String description) {
         this.name = name;
@@ -40,6 +41,10 @@ public class Task {
         this.name = name;
     }
 
+    public TasksType getType() {
+        return TasksType.TASK;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -54,5 +59,11 @@ public class Task {
         }
         Task task = (Task) obj;
         return name.equals(task.name) && id == task.id && description.equals(task.description) && status.equals(task.status);
+    }
+
+    @Override
+    public String toString() {
+        String taskToString = id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description;
+        return taskToString;
     }
 }

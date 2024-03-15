@@ -1,13 +1,16 @@
+import manager.FileBackedTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 
-public class Main {
-    
-    public static void main(String[] args) {
+import java.io.File;
 
+public class Main {
+
+    public static void main(String[] args) {
+/*
         TaskManager manager = Managers.getDefault();
 
         Task task1 = new Task("Погладить платье", "Завтра свидание");
@@ -24,7 +27,18 @@ public class Main {
         manager.createNewEpic(epic2);
         Subtask subtask1Epic2 = new Subtask("Купить книгу на английском", "В книжном сейчас распродажа", 6);
         manager.createNewSubtask(subtask1Epic2);
-        printAllTasks(manager);
+        manager.getById(3);
+        manager.getById(2);
+        manager.getById(3);
+
+ */
+
+        File file = new File("resources/history.csv");
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(file);
+        taskManager.getAllEpics();
+        taskManager.getAllTasks();
+
+        printAllTasks(taskManager);
     }
 
     private static void printAllTasks(TaskManager manager) {

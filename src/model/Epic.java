@@ -16,4 +16,15 @@ public class Epic extends Task {
     public void setSubtasksInEpic(Integer id) {
         subtasksInEpic.add(id);
     }
+
+    @Override
+    public String toString() {
+        String taskToString = id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description;
+        return taskToString;
+    }
+
+    @Override
+    public TasksType getType() {
+        return TasksType.EPIC;
+    }
 }
