@@ -150,7 +150,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return task;
     }
 
-    public void save() {
+    private void save() {
         try (BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(file))) {
             ArrayList<String> allTasks = CSVTaskFormatter.makeList(getAllTasks(), getAllEpics(), getAllSubtasks());
             bufferWriter.write("id, type, name, status, description, epicId");

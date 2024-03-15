@@ -22,9 +22,7 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void SaveAndLoadEmptyFile() throws IOException {
-        taskManager.save();
-
+    public void shouldLoadAndSaveEmptyFile() throws IOException {
         FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(0, loadedTaskManager.getAllTasks().size());
     }
@@ -38,8 +36,6 @@ public class FileBackedTaskManagerTest {
         taskManager.createNewTask(task1);
         taskManager.createNewTask(task2);
         taskManager.createNewEpic(epic1);
-
-        taskManager.save();
 
         FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(1, loadedTaskManager.getAllEpics().size());

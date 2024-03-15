@@ -3,4 +3,3 @@ id, type, name, status, description, epicId
 2, TASK, Test addNewTask, NEW, Test addNewTask description
 3, EPIC, Test addNewTask, NEW, Test addNewTask description
 
-1, 2
