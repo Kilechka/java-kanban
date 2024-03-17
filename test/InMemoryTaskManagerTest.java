@@ -1,171 +1,63 @@
-import manager.Managers;
-import manager.TaskManager;
+import manager.InMemoryTaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
-
-    private static TaskManager manager;
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @BeforeEach
     public void beforeEach() {
-        manager = Managers.getDefault();
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description"));
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description"));
+        manager = new InMemoryTaskManager();
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 00:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 01:00", 30));
         manager.createNewEpic(new Epic("Test addNewTask", "Test addNewTask description"));
-        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3));
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "15.09.1999 02:00", 30));
     }
 
     @Test
-    public void shouldAddNewTask() {
-        manager.deleteAllTasks();
-        Task task = new Task("Test addNewTask", "Test addNewTask description");
-        manager.createNewTask(task);
-        final Task savedTask = manager.getById(task.getId());
-        assertNotNull(savedTask, "Задача не найдена");
-        assertEquals(task, savedTask, "Задачи не совпадают.");
-
-        final ArrayList<Task> tasks = manager.getAllTasks();
-        assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+    public void shouldSetStartTimeEpic() {
+        assertEquals(LocalDateTime.of(1999, 9, 15, 2, 0), manager.getById(3).getStartTime());
     }
 
     @Test
-    public void taskIsEqualToTaskIfEqualIfTheirIdIsEqual() {
-        assertEquals(manager.getById(1), (manager.getById(1)), "Экземпляры класса Task не равны друг другу");
-        assertEquals(manager.getById(3), (manager.getById(3)), "Наследники класса Task не равны друг другу");
+    public void shouldSetDuration() {
+        assertEquals(Duration.ofMinutes(30), manager.getById(3).getDuration());
     }
 
     @Test
-    public void shouldFoundTasksById() {
-        assertNotNull(manager.getById(1), "Нельзя найти задачу по ID");
-        assertNotNull(manager.getById(3), "Нельзя найти задачу по ID");
-        assertNotNull(manager.getById(4), "Нельзя найти задачу по ID");
+    public void shouldAddTimeAndDurationToEpic() {
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "16.09.1999 00:00", 30));
+        assertEquals(LocalDateTime.of(1999, 9, 15, 2, 0), manager.getById(3).getStartTime());
+        assertEquals(Duration.ofMinutes(60), manager.getById(3).getDuration());
     }
 
     @Test
-    public void shouldRemoveAllTasks() {
-        manager.deleteAllSubtasks();
-        boolean deleteSub = manager.getAllSubtasks().size() == 0;
-        assertTrue(deleteSub, "Не получилось удалить все подзадачи");
+    public void shouldNotIntersect() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:00", 30));
+        }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:00
 
-        manager.deleteAllTasks();
-        boolean deleteTask = manager.getAllTasks().size() == 0;
-        assertTrue(deleteTask, "Не получилось удалить все подзадачи");
+        assertThrows(IllegalArgumentException.class, () -> {
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:29", 30));
+        }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:29
 
-        manager.deleteAllEpics();
-        boolean deleteEpic = manager.getAllEpics().size() == 0;
-        assertTrue(deleteEpic, "Не получилось удалить все подзадачи");
-    }
+        assertThrows(IllegalArgumentException.class, () -> {
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "14.09.1999 23:30", 30));
+        }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 00:00, такса 2 - 23:30
 
-    @Test
-    public void shouldNotCreateWithNonExistenseId() {
-        manager.deleteAllSubtasks();
-        Subtask sub = new Subtask("Sub", "Sub description", 10);
-        assertNull(sub.getId(), "Подзадача с несуществующим id эпика была создана");
-        boolean getSub = manager.getAllSubtasks().size() == 0;
-        assertTrue(getSub, "Подзадача с несуществующим id эпика была создана");
-    }
+        assertDoesNotThrow(() -> {
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "14.09.1999 23:29", 30));
+        }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 00:00, такса 2 - 23:29
 
-    @Test
-    public void shouldNotClashInsideManager() {
-        Subtask sub = new Subtask("Sub", "Sub description", 3);
-        manager.createNewSubtask(sub);
-        assertFalse(sub.getId() == 3, "Мы задали id 3 при создании подзадачи. Этот id был ей присвоен");
-    }
-
-    @Test
-    public void shouldGetAllTask() {
-        assertNotNull(manager.getAllEpics());
-        assertNotNull(manager.getAllTasks());
-        assertNotNull(manager.getAllSubtasks());
-    }
-
-    @Test
-    public void shouldUpdateStatusEpic() {
-        Epic epic = new Epic("Epic", "Epic description");
-        manager.createNewEpic(epic);
-        Subtask sub = new Subtask("Sub", "Sub description", epic.getId());
-        manager.createNewSubtask(sub);
-
-        assertEquals("NEW", epic.getStatus());
-
-        sub.setStatus("IN_PROGRESS");
-        manager.updateSub(sub);
-        manager.updateEpic(epic);
-
-        assertEquals("IN_PROGRESS", epic.getStatus(), "Статус эпика не поменялся");
-
-        sub.setStatus("DONE");
-        manager.updateSub(sub);
-        manager.updateEpic(epic);
-
-        assertEquals("DONE", epic.getStatus(), "Статус эпика не поменялся");
-    }
-
-    @Test
-    public void shouldUpdate() {
-        assertEquals("NEW", manager.getById(1).getStatus());
-        manager.getById(1).setStatus("DONE");
-        manager.updateTask(manager.getById(1));
-        assertEquals("DONE", manager.getById(1).getStatus(), "Статус задачи не обновился");
-        assertEquals("NEW", manager.getById(4).getStatus());
-
-        Epic epic = new Epic("Epic", "Epic description");
-        manager.createNewEpic(epic);
-        Subtask sub = new Subtask("Sub", "Sub description", epic.getId());
-        manager.createNewSubtask(sub);
-        sub.setStatus("DONE");
-        manager.updateSub(sub);
-        manager.updateEpic(epic);
-        assertEquals("DONE", sub.getStatus(), "Статус подзадачи не обновился");
-        assertEquals("DONE", epic.getStatus(), "Статус эпика не обновился");
-    }
-
-    @Test
-    public void shouldGetHistory() {
-        manager.getById(1);
-        manager.getById(2);
-        manager.getById(3);
-        manager.getById(1);
-
-        assertNotNull(manager.getHistory(), "История не отображается");
-    }
-
-    @Test
-    public void shouldNotAddToHistoryTaskWithNullId() {
-        manager.getById(10);
-        assertEquals(0, manager.getHistory().size());
-    }
-
-    @Test
-    public void shouldRemoveById() {
-        manager.removeByIdTask(1);
-        manager.removeByIdSub(4);
-        manager.removeByIdEpic(3);
-
-        assertNull(manager.getById(1));
-        assertNull(manager.getById(4));
-        assertNull(manager.getById(3));
-    }
-
-    @Test
-    public void shouldNotHaveOldSub() {
-        manager.removeByIdSub(manager.getById(4).getId());
-        assertNull(manager.getById(4));
-    }
-
-    @Test
-    public void shouldNotHaveOldSubInEpic() {
-        manager.removeByIdSub(manager.getById(4).getId());
-        assertEquals(0, manager.getSubtasksById(3).size());
+        assertDoesNotThrow(() -> {
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:31", 30));
+        }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:31
     }
 }
