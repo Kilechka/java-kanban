@@ -179,10 +179,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Subtask> getSubtasksById(Integer epicId) {
-        ArrayList<Subtask> Subtask = new ArrayList<>();
+        ArrayList<Subtask> subtask = new ArrayList<>();
         epics.get(epicId).getSubtasksInEpic().stream()
-                .forEach(id -> Subtask.add(subtasks.get(id)));
-        return Subtask;
+                .forEach(id -> subtask.add(subtasks.get(id)));
+        return subtask;
     }
 
     @Override
@@ -233,18 +233,18 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic.getSubtasksInEpic().isEmpty()) {
             epic.setStatus("NEW");
         }
-        int NEW = 0;
-        int DONE = 0;
+        int countNew = 0;
+        int countDone = 0;
         for (Integer subtaskId : epic.getSubtasksInEpic()) {
             if (subtasks.get(subtaskId).getStatus().equals("NEW")) {
-                NEW++;
+                countNew++;
             } else if (subtasks.get(subtaskId).getStatus().equals("DONE")) {
-                DONE++;
+                countDone++;
             }
         }
-        if (epic.getSubtasksInEpic().size() == NEW) {
+        if (epic.getSubtasksInEpic().size() == countNew) {
             epic.setStatus("NEW");
-        } else if (epic.getSubtasksInEpic().size() == DONE) {
+        } else if (epic.getSubtasksInEpic().size() == countDone) {
             epic.setStatus("DONE");
         }
         return epic.getStatus();
