@@ -22,7 +22,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         if (startTime != null && duration != null) {
-            return id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration.toMinutes();
+            return id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration;
         } else {
             return id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description;
         }
@@ -35,5 +35,10 @@ public class Epic extends Task {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 }

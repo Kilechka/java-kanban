@@ -5,10 +5,11 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
@@ -28,14 +29,15 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     public void shouldSetDuration() {
-        assertEquals(Duration.ofMinutes(30), manager.getById(3).getDuration());
+        assertEquals(30, manager.getById(3).getDuration());
     }
 
     @Test
     public void shouldAddTimeAndDurationToEpic() {
         manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "16.09.1999 00:00", 30));
         assertEquals(LocalDateTime.of(1999, 9, 15, 2, 0), manager.getById(3).getStartTime());
-        assertEquals(Duration.ofMinutes(60), manager.getById(3).getDuration());
+        assertEquals(60, manager.getById(3).getDuration());
+        assertEquals(LocalDateTime.of(1999, 9, 16, 00, 30), manager.getById(3).getEndTime());
     }
 
     @Test
@@ -59,5 +61,17 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         assertDoesNotThrow(() -> {
             manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:31", 30));
         }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:31
+    }
+
+    @Test
+    public void shouldSort() {
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description"));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 06:00", 30));
+        List<Task> sortTasks = manager.getPrioritizedTasks();
+        assertEquals(1, sortTasks.get(0).getId()); // 00:00
+        assertEquals(2, sortTasks.get(1).getId()); // 01:00
+        assertEquals(4, sortTasks.get(2).getId()); // 02:00
+        assertEquals(6, sortTasks.get(3).getId()); // 06:00
+        assertEquals(5, sortTasks.get(4).getId()); // null
     }
 }

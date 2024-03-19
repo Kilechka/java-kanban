@@ -10,7 +10,7 @@ public class Task {
     protected String name;
     protected String description;
     protected String status;
-    protected Duration duration;
+    protected Integer duration;
     protected LocalDateTime startTime;
     protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
@@ -24,26 +24,30 @@ public class Task {
             this.startTime = null;
         }
         if (duration != null) {
-            this.duration = Duration.ofMinutes(duration);
+            this.duration = duration;
         } else {
-            this.duration = Duration.ZERO;
+            this.duration = null;
         }
+    }
+
+    public Task(String name, String description) {
+        this(name, description, null, null);
     }
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
-    public Duration getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
     public LocalDateTime getEndTime() {
-        return startTime.plus(duration);
+        return startTime.plus(Duration.ofMinutes(duration));
     }
 
     public LocalDateTime getStartTime() {
@@ -100,12 +104,19 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration.toMinutes();
+        if (startTime == null || duration == null) {
+            return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description;
+        } else {
+            return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration;
+        }
     }
 
     public boolean doTheTasksIntersect(Task otherTask) {
-        boolean doesNotStartAfterThisEnds = !this.getStartTime().isAfter(otherTask.getEndTime());
-        boolean doesNotEndBeforeThisStarts = !this.getEndTime().isBefore(otherTask.getStartTime());
-        return doesNotStartAfterThisEnds && doesNotEndBeforeThisStarts;
+        if (otherTask.getStartTime() != null && otherTask.getDuration() != null && getStartTime() != null && getDuration() != null) {
+            boolean doesNotStartAfterThisEnds = !this.getStartTime().isAfter(otherTask.getEndTime());
+            boolean doesNotEndBeforeThisStarts = !this.getEndTime().isBefore(otherTask.getStartTime());
+            return doesNotStartAfterThisEnds && doesNotEndBeforeThisStarts;
+        }
+        return false;
     }
 }

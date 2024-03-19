@@ -189,14 +189,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldSetDuration() {
-        assertEquals(Duration.ofMinutes(30), manager.getById(3).getDuration());
+        assertEquals(30, manager.getById(3).getDuration());
     }
 
     @Test
     public void shouldAddTimeAndDurationToEpic() {
         manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "16.09.1999 00:00", 30));
         assertEquals(LocalDateTime.of(1999, 9, 15, 2, 0), manager.getById(3).getStartTime());
-        assertEquals(Duration.ofMinutes(60), manager.getById(3).getDuration());
+        assertEquals(60, manager.getById(3).getDuration());
     }
 }
 
