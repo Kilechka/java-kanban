@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,5 +79,15 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         assertThrows(ManagerSaveException.class, () -> {
             FileBackedTaskManager.loadFromFile(file);
         }, "Нельзя выгрузить удалённый файл");
+    }
+
+    @Test
+    void shouldGiveSortedTasksAfterLoading() throws IOException {
+        FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(file);
+        List<Task> sortedTasks = loadedTaskManager.getPrioritizedTasks();
+
+        assertEquals(manager.getById(1), sortedTasks.get(0));
+        assertEquals(manager.getById(2), sortedTasks.get(1));
+        assertEquals(manager.getById(4), sortedTasks.get(2));
     }
 }
