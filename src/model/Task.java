@@ -1,16 +1,57 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Task {
 
     protected Integer id;
     protected String name;
     protected String description;
     protected String status;
+    protected Integer duration;
+    protected LocalDateTime startTime;
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    public Task(String name, String description) {
+    public Task(String name, String description, String startTime, Integer duration) {
         this.name = name;
         this.description = description;
         this.status = "NEW";
+        if (startTime != null && !startTime.isEmpty()) {
+            this.startTime = LocalDateTime.parse(startTime, formatter);
+        } else {
+            this.startTime = null;
+        }
+        if (duration != null) {
+            this.duration = duration;
+        } else {
+            this.duration = null;
+        }
+    }
+
+    public Task(String name, String description) {
+        this(name, description, null, null);
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(Duration.ofMinutes(duration));
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     public Integer getId() {
@@ -63,7 +104,19 @@ public class Task {
 
     @Override
     public String toString() {
-        String taskToString = id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description;
-        return taskToString;
+        if (startTime == null || duration == null) {
+            return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description;
+        } else {
+            return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration;
+        }
+    }
+
+    public boolean doTheTasksIntersect(Task otherTask) {
+        if (otherTask.getStartTime() != null && otherTask.getDuration() != null && getStartTime() != null && getDuration() != null) {
+            boolean doesNotStartAfterThisEnds = !this.getStartTime().isAfter(otherTask.getEndTime());
+            boolean doesNotEndBeforeThisStarts = !this.getEndTime().isBefore(otherTask.getStartTime());
+            return doesNotStartAfterThisEnds && doesNotEndBeforeThisStarts;
+        }
+        return false;
     }
 }

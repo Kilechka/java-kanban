@@ -18,12 +18,19 @@ public class CSVTaskFormatter {
         String status = values[3];
         String description = values[4];
         int epicId = 0;
-        if (values.length == 6) {
+        String startTime = null;
+        Integer duration = null;
+        if (values.length == 8) {
             epicId = Integer.parseInt(values[5]);
+            startTime = values[6];
+            duration = Integer.valueOf(values[7]);
+        } else if (values.length == 7) {
+            startTime = values[5];
+            duration = Integer.valueOf(values[6]);
         }
         switch (tasksType) {
             case TASK:
-                Task task = new Task(name, description);
+                Task task = new Task(name, description, startTime, duration);
                 task.setId(id);
                 task.setStatus(status);
                 return task;
@@ -33,7 +40,7 @@ public class CSVTaskFormatter {
                 epic.setStatus(status);
                 return epic;
             case SUBTASK:
-                Subtask subtask = new Subtask(name, description, epicId);
+                Subtask subtask = new Subtask(name, description, epicId, startTime, duration);
                 subtask.setId(id);
                 subtask.setStatus(status);
                 return subtask;

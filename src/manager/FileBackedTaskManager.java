@@ -4,12 +4,7 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +37,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
                     } else {
                         fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) task);
+                        Epic epic = fileBackedTaskManager.epics.get(((Subtask) task).getEpicId());
+                        epic.setSubtasksInEpic(task.getId());
+                        fileBackedTaskManager.setTimeAndDurationEpic(epic);
                     }
                 } else {
                     if (line.isEmpty()) {
@@ -150,10 +148,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return task;
     }
 
-    public void save() {
+    private void save() {
         try (BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(file))) {
             ArrayList<String> allTasks = CSVTaskFormatter.makeList(getAllTasks(), getAllEpics(), getAllSubtasks());
-            bufferWriter.write("id, type, name, status, description, epicId");
+            bufferWriter.write("id, type, name, status, description, epicId, startTime, duration");
             bufferWriter.newLine();
             for (String task : allTasks) {
                 bufferWriter.write(task);

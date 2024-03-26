@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 class InMemoryHistoryManagerTest {
 
     private static HistoryManager manager;
@@ -18,9 +16,9 @@ class InMemoryHistoryManagerTest {
     @BeforeEach
     void BeforeEach() {
         manager = Managers.getDefaultHistory();
-        task1 = new Task("Task 1", "Description 1");
-        task2 = new Task("Task 2", "Description 2");
-        task3 = new Task("Task 3", "Description 3");
+        task1 = new Task("Task 1", "Description 1", "15.09.1999 00:00", 30);
+        task2 = new Task("Task 2", "Description 2", "15.09.1999 00:00", 30);
+        task3 = new Task("Task 3", "Description 3", "15.09.1999 00:00", 30);
         task1.setId(1);
         task2.setId(2);
         task3.setId(3);
@@ -40,7 +38,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemove() {
-        Task task1 = new Task("Task 1", "Description 1");
+        Task task1 = new Task("Task 1", "Description 1", "15.09.1999 00:00", 30);
         task1.setId(1);
         manager.add(task1);
         manager.remove(task1.getId());
@@ -49,7 +47,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldNotAddDubbling() {
-        Task task1 = new Task("Task 1", "Description 1");
+        Task task1 = new Task("Task 1", "Description 1", "15.09.1999 00:00", 30);
         task1.setId(1);
         manager.add(task1);
         manager.add(task1);

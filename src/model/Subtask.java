@@ -3,9 +3,13 @@ package model;
 public class Subtask extends Task {
     private Integer epicId;
 
-    public Subtask(String name, String description, Integer epicId) {
-        super(name, description);
+    public Subtask(String name, String description, Integer epicId, String startTime, Integer duration) {
+        super(name, description, startTime, duration);
         this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, Integer epicId) {
+        this(name, description, epicId, null, null);
     }
 
     public Integer getEpicId() {
@@ -23,8 +27,11 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String taskToString = id + ", " + TasksType.SUBTASK + ", " + name + ", " + status + ", " + description + ", " + epicId;
-        return taskToString;
+        if (startTime == null & duration == null) {
+            return id + ", " + TasksType.SUBTASK + ", " + name + ", " + status + ", " + description + ", " + epicId;
+        } else {
+            return id + ", " + TasksType.SUBTASK + ", " + name + ", " + status + ", " + description + ", " + epicId + ", " + formatter.format(startTime) + ", " + duration;
+        }
     }
 }
 
