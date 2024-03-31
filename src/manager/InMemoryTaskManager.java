@@ -111,6 +111,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public Task getByIdInside(Integer id) {
+        if (tasks.containsKey(id)) {
+            return tasks.get(id);
+        } else if (epics.containsKey(id)) {
+            return epics.get(id);
+        } else {
+            return subtasks.get(id);
+        }
+    }
+
+    @Override
     public Task updateTask(Task task) {
         List<Task> intersect = getPrioritizedTasks().stream()
                 .filter(otherTask -> otherTask.doTheTasksIntersect(task))
