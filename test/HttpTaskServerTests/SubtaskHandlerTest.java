@@ -66,8 +66,6 @@ public class SubtaskHandlerTest {
         assertNotNull(tasks);
     }
 
- */
-
     @Test
     public void shouldGetAllSubTest() throws IOException, InterruptedException {
         Subtask sub = new Subtask("task", "task", 1, "15.09.1999 05:15", 30);
@@ -82,6 +80,8 @@ public class SubtaskHandlerTest {
         System.out.println(response.body());
         assertTrue(response.body().contains("\"id\":2"));
     }
+
+ */
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {

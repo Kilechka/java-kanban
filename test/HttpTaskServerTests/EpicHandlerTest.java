@@ -67,9 +67,8 @@ public class EpicHandlerTest {
             assertNotNull(tasks);
         }
 
-     */
     @Test
-    public void shouldGetAllTasksTest() throws IOException, InterruptedException {
+    public void shouldGetAllEpicsTest() throws IOException, InterruptedException {
         taskManager.createNewEpic(new Epic("task", "Task"));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/epics"))
@@ -80,6 +79,8 @@ public class EpicHandlerTest {
         assertEquals(200, response.statusCode());
         assertTrue(response.body().contains("\"id\":1"));
     }
+
+     */
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {

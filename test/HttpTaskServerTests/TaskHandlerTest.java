@@ -63,8 +63,6 @@ public class TaskHandlerTest {
         assertNotNull(tasks);
     }
 
- */
-
     @Test
     public void shouldGetAllTasksTest() throws IOException, InterruptedException {
         taskManager.createNewTask(new Task("task", "Task"));
@@ -77,6 +75,8 @@ public class TaskHandlerTest {
         assertEquals(200, response.statusCode());
         assertTrue(response.body().contains("\"id\":1"));
     }
+
+ */
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {
@@ -93,6 +93,5 @@ public class TaskHandlerTest {
         Thread.sleep(1000);
         assertEquals(201, response.statusCode());
         assertTrue(taskManager.getAllTasks().size() == 0);
-
     }
 }

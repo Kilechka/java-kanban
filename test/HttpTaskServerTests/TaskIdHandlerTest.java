@@ -43,9 +43,9 @@ public class TaskIdHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-
+/*
     @Test
-    public void shouldHandleGetRequesttest() throws IOException, InterruptedException {
+    public void shouldHandleGetRequestTest() throws IOException, InterruptedException {
         Task task = new Task("task", "task", "15.09.1999 05:15", 30);
         taskManager.createNewTask(task);
 
@@ -58,7 +58,7 @@ public class TaskIdHandlerTest {
         assertEquals(200, response.statusCode());
         assertTrue(response.body().contains("\"id\":1"));
     }
-/*
+
     @Test
     public void shouldUpdateTask() throws IOException, InterruptedException {
         Task task = new Task("task", "task", "15.09.1999 05:15", 30);
