@@ -18,6 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,19 +45,19 @@ public class SubtaskHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-/*
+
     @Test
     public void shouldCreateSubTest() throws IOException, InterruptedException {
         Subtask sub = new Subtask("task", "task", 1);
         String json = gson.toJson(sub);
 
-        Thread.sleep(1000);
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
-                .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json;charset=utf-8")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
+        Thread.sleep(1000);
+
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
@@ -80,8 +81,6 @@ public class SubtaskHandlerTest {
         System.out.println(response.body());
         assertTrue(response.body().contains("\"id\":2"));
     }
-
- */
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {

@@ -19,6 +19,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EpicIdHandlerTest {
     private HttpTaskServer httpTaskServer;
@@ -43,7 +44,7 @@ public class EpicIdHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-/*
+
     @Test
     public void shouldUpdateEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("task", "task");
@@ -62,8 +63,6 @@ public class EpicIdHandlerTest {
         Epic updatedTask = (Epic) taskManager.getById(epic.getId());
         assertEquals("DONE", updatedTask.getStatus());
     }
-
- */
 
     @Test
     public void shouldDeletById() throws IOException, InterruptedException {

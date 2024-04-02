@@ -36,7 +36,7 @@ public class HistoryHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-/*
+
     @Test
     public void shouldGetHistory() throws IOException, InterruptedException {
         taskManager.createNewTask(new Task("task", "Task"));
@@ -51,6 +51,4 @@ public class HistoryHandlerTest {
         System.out.println(response.body());
         assertTrue(response.body().contains("\"id\":1"));
     }
-
- */
 }

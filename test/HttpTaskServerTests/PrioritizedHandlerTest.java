@@ -35,7 +35,7 @@ public class PrioritizedHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-/*
+
     @Test
     public void shouldGetPrioritized() throws IOException, InterruptedException {
         taskManager.createNewTask(new Task("task", "Task"));
@@ -49,6 +49,4 @@ public class PrioritizedHandlerTest {
         System.out.println(response.body());
         assertTrue(response.body().contains("\"id\":1"));
     }
-
- */
 }

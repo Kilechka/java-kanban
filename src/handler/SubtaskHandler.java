@@ -1,25 +1,17 @@
 package handler;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import http.HttpTaskServer;
-import manager.ManagerSaveException;
 import manager.TaskManager;
 import model.Subtask;
 
 import java.io.IOException;
 import java.util.List;
 
-import static handler.Response.sendResponse;
-
-public class SubtaskHandler implements HttpHandler {
-    private final TaskManager taskManager;
-    private final Gson gson;
+public class SubtaskHandler extends Handler {
 
     public SubtaskHandler(TaskManager taskManager) {
-        this.taskManager = taskManager;
-        this.gson = HttpTaskServer.getGson();
+        super(taskManager);
     }
 
     @Override
@@ -54,9 +46,6 @@ public class SubtaskHandler implements HttpHandler {
         } catch (IllegalArgumentException e) {
             String responseBody = e.getMessage();
             sendResponse(httpExchange, 406, responseBody);
-        } catch (ManagerSaveException e) {
-            String responseBody = e.getMessage();
-            sendResponse(httpExchange, 500, responseBody);
         }
     }
 

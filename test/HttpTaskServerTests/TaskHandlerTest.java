@@ -3,6 +3,7 @@ package HttpTaskServerTests;
 import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import manager.Managers;
 import manager.TaskManager;
 import model.Task;
@@ -14,6 +15,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import http.HttpTaskServer;
 
@@ -40,7 +43,7 @@ public class TaskHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-/*
+
     @Test
     public void shouldCreateTaskTest() throws IOException, InterruptedException {
         Task task = new Task("task", "task", "15.09.1999 05:15", 30);
@@ -51,7 +54,7 @@ public class TaskHandlerTest {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
-                .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json;charset=utf-8")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -73,10 +76,14 @@ public class TaskHandlerTest {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertTrue(response.body().contains("\"id\":1"));
-    }
+        System.out.println(response.body());
 
- */
+        final List<Task> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
+        }.getType());
+        //  assertNotNull(tasks, "Задачи не возвращаются");
+        //   assertEquals(1, tasks.size(), "Некорректное количество задач");
+        //  assertEquals("Test 1", tasks.get(0).getName(), "Некорректное имя задачи");
+    }
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {

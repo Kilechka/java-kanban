@@ -43,7 +43,7 @@ public class TaskIdHandlerTest {
     public void afterEach() {
         httpTaskServer.stop();
     }
-/*
+
     @Test
     public void shouldHandleGetRequestTest() throws IOException, InterruptedException {
         Task task = new Task("task", "task", "15.09.1999 05:15", 30);
@@ -80,8 +80,6 @@ public class TaskIdHandlerTest {
         Task updatedTask = taskManager.getById(task.getId());
         assertEquals("DONE", updatedTask.getStatus());
     }
-
- */
 
     @Test
     public void shouldDeleteById() throws IOException, InterruptedException {

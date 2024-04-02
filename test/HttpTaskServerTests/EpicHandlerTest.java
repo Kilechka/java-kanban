@@ -13,11 +13,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,34 +48,45 @@ public class EpicHandlerTest {
         httpTaskServer.stop();
     }
 
-    /*
-        @Test
-        public void shouldCreateEpicTest() throws IOException, InterruptedException {
-            Epic epic = new Epic("task", "task");
-            String json = gson.toJson(epic);
-            URI url = URI.create("http://localhost:8080/epics");
+    @Test
+    public void shouldCreateEpicTest() throws IOException, InterruptedException {
+        Epic epic = new Epic("task", "task");
+        String json = gson.toJson(epic);
+        URI url = URI.create("http://localhost:8080/epics");
 
-            Thread.sleep(1000);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(url)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
-                    .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json;charset=utf-8")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+        // Thread.sleep(1000);
+        HttpResponse<String> response = HttpClient
+                .newBuilder()
+                .connectTimeout(Duration.ofSeconds(15))
+                .proxy(ProxySelector.of(
+                        new InetSocketAddress(
+                                "1.1.1.1", 1111
+                        )
+                ))
+                .build()
+                .send(request, HttpResponse.BodyHandlers.ofString());
 
-            assertEquals(200, response.statusCode());
+        //  HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            List<Task> tasks = taskManager.getAllTasks();
+        assertEquals(201, response.statusCode());
 
-            assertNotNull(tasks);
-        }
+        List<Task> tasks = taskManager.getAllTasks();
+
+        assertNotNull(tasks);
+    }
 
     @Test
     public void shouldGetAllEpicsTest() throws IOException, InterruptedException {
         taskManager.createNewEpic(new Epic("task", "Task"));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/epics"))
+                .header("Content-Type", "application/json;charset=utf-8")
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -79,8 +94,6 @@ public class EpicHandlerTest {
         assertEquals(200, response.statusCode());
         assertTrue(response.body().contains("\"id\":1"));
     }
-
-     */
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {
@@ -91,6 +104,7 @@ public class EpicHandlerTest {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/epics"))
+                .header("Content-Type", "application/json;charset=utf-8")
                 .DELETE()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
