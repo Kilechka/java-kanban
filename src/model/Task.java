@@ -1,11 +1,7 @@
 package model;
 
 import adapter.LocalDateTimeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
