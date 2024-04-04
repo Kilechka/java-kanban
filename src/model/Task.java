@@ -1,5 +1,7 @@
 package model;
 
+import adapter.LocalDateTimeAdapter;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,14 +14,14 @@ public class Task {
     protected String status;
     protected Integer duration;
     protected LocalDateTime startTime;
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    LocalDateTimeAdapter adapter = new LocalDateTimeAdapter();
 
     public Task(String name, String description, String startTime, Integer duration) {
         this.name = name;
         this.description = description;
         this.status = "NEW";
-        if (startTime != null && !startTime.isEmpty()) {
-            this.startTime = LocalDateTime.parse(startTime, formatter);
+        if (startTime != null) {
+            this.startTime = LocalDateTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } else {
             this.startTime = null;
         }
@@ -31,7 +33,11 @@ public class Task {
     }
 
     public Task(String name, String description) {
-        this(name, description, null, null);
+        this.name = name;
+        this.description = description;
+        this.status = "NEW";
+        this.startTime = null;
+        this.duration = null;
     }
 
     public void setStartTime(LocalDateTime startTime) {
@@ -107,7 +113,7 @@ public class Task {
         if (startTime == null || duration == null) {
             return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description;
         } else {
-            return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration;
+            return id + ", " + TasksType.TASK + ", " + name + ", " + status + ", " + description + ", " + startTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ", " + duration;
         }
     }
 

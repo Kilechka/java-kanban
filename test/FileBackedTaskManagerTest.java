@@ -21,10 +21,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     void BeforeEach() throws IOException {
         file = Files.createTempFile("test", ".csv").toFile();
         manager = new FileBackedTaskManager(file);
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 00:00", 30));
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 01:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T00:00:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T01:00:00", 30));
         manager.createNewEpic(new Epic("Test addNewTask", "Test addNewTask description"));
-        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "15.09.1999 02:00", 30));
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "1999-09-15T02:00:00", 30));
     }
 
     @Test
@@ -38,8 +38,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void shouldSaveAndLoadTasks() throws IOException {
-        Task task1 = new Task("Task 1", "Description 1", "15.09.1999 05:00", 30);
-        Task task2 = new Task("Task 2", "Description 2", "15.09.1999 06:00", 30);
+        Task task1 = new Task("Task 1", "Description 1", "1999-09-15T05:00:00", 30);
+        Task task2 = new Task("Task 2", "Description 2", "1999-09-15T06:00:00", 30);
         Epic epic1 = new Epic("Epic 1", "Description 3");
 
         manager.createNewTask(task1);
@@ -58,7 +58,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void shouldSaveHistory() {
-        Task task1 = new Task("Task 1", "Description 1", "15.09.1999 03:00", 30);
+        Task task1 = new Task("Task 1", "Description 1", "1999-09-15T03:00:00", 30);
         Epic epic1 = new Epic("Epic 1", "Description 3");
 
         manager.createNewTask(task1);

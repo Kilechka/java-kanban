@@ -1,6 +1,2 @@
 id, type, name, status, description, epicId, startTime, duration
-1, TASK, Test addNewTask, NEW, Test addNewTask description, 15.09.1999 00:00, 30
-2, TASK, Test addNewTask, NEW, Test addNewTask description, 15.09.1999 01:00, 30
-3, EPIC, Test addNewTask, NEW, Test addNewTask description, 15.09.1999 02:00, 30
-4, SUBTASK, Test addNewTask, NEW, Test addNewTask description, 3, 15.09.1999 02:00, 30
 

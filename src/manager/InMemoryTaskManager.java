@@ -111,6 +111,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public Task getByIdInside(Integer id) {
+        if (tasks.containsKey(id)) {
+            return tasks.get(id);
+        } else if (epics.containsKey(id)) {
+            return epics.get(id);
+        } else {
+            return subtasks.get(id);
+        }
+    }
+
+    @Override
     public Task updateTask(Task task) {
         List<Task> intersect = getPrioritizedTasks().stream()
                 .filter(otherTask -> otherTask.doTheTasksIntersect(task))
@@ -207,6 +218,7 @@ public class InMemoryTaskManager implements TaskManager {
         Integer duration = 0;
         for (int id : subs) {
             Subtask subtask = subtasks.get(id);
+            if (subtask.getDuration() == null && subtask.getStartTime() == null) continue;
             duration += subtask.getDuration();
             if (subtask.getStartTime().isBefore(startTime)) {
                 startTime = subtask.getStartTime();
