@@ -25,7 +25,7 @@ public abstract class Handler implements HttpHandler {
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.getResponseHeaders().add("Content-Length", String.valueOf(responseBytes.length));
         exchange.sendResponseHeaders(statusCode, responseBytes.length);
-        OutputStream os = exchange.getResponseBody().write();
+        OutputStream os = exchange.getResponseBody();
         os.write(responseBytes);
         os.close();
     }
