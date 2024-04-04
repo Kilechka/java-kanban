@@ -1,5 +1,7 @@
 package model;
 
+import java.time.format.DateTimeFormatter;
+
 public class Subtask extends Task {
     private Integer epicId;
 
@@ -30,7 +32,7 @@ public class Subtask extends Task {
         if (startTime == null & duration == null) {
             return id + ", " + TasksType.SUBTASK + ", " + name + ", " + status + ", " + description + ", " + epicId;
         } else {
-            return id + ", " + TasksType.SUBTASK + ", " + name + ", " + status + ", " + description + ", " + epicId + ", " + formatter.format(startTime) + ", " + duration;
+            return id + ", " + TasksType.SUBTASK + ", " + name + ", " + status + ", " + description + ", " + epicId + ", " + startTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ", " + duration;
         }
     }
 }

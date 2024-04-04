@@ -20,17 +20,13 @@ public abstract class Handler implements HttpHandler {
         this.gson = HttpTaskServer.getGson();
     }
 
-    @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
-    }
-
     public void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(statusCode, responseBytes.length);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-        OutputStream os = exchange.getResponseBody();
+        exchange.getResponseHeaders().add("Content-Length", String.valueOf(responseBytes.length));
+        exchange.sendResponseHeaders(statusCode, responseBytes.length);
+        OutputStream os = exchange.getResponseBody().write();
         os.write(responseBytes);
         os.close();
     }
-
 }

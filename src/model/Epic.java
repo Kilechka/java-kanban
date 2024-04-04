@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -22,7 +23,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         if (startTime != null && duration != null) {
-            return id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description + ", " + formatter.format(startTime) + ", " + duration;
+            return id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description + ", " + startTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ", " + duration;
         } else {
             return id + ", " + TasksType.EPIC + ", " + name + ", " + status + ", " + description;
         }

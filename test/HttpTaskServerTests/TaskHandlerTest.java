@@ -1,8 +1,6 @@
 package HttpTaskServerTests;
 
-import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import manager.Managers;
 import manager.TaskManager;
@@ -14,7 +12,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,16 +24,16 @@ public class TaskHandlerTest {
     private HttpClient httpClient;
     static TaskManager taskManager;
     private Gson gson;
+    private URI url;
 
     @BeforeEach
     public void beforeEach() throws IOException {
         taskManager = Managers.getDefault();
         httpTaskServer = new HttpTaskServer(taskManager);
-        httpTaskServer.start();
         httpClient = HttpClient.newHttpClient();
-        gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
+        gson = HttpTaskServer.getGson();
+        httpTaskServer.start();
+        url = URI.create("http://localhost:8080/tasks");
     }
 
     @AfterEach
@@ -46,43 +43,42 @@ public class TaskHandlerTest {
 
     @Test
     public void shouldCreateTaskTest() throws IOException, InterruptedException {
-        Task task = new Task("task", "task", "15.09.1999 05:15", 30);
-        String json = gson.toJson(task);
-        URI url = URI.create("http://localhost:8080/tasks");
+        Task task = new Task("task", "task");
 
-        Thread.sleep(1000);
+        String jsonTask = gson.toJson(task);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json;charset=utf-8")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTask))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
 
         List<Task> tasks = taskManager.getAllTasks();
 
         assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals("task", tasks.get(0).getName());
     }
 
     @Test
     public void shouldGetAllTasksTest() throws IOException, InterruptedException {
+        taskManager.createNewTask(new Task("task1", "Task", "1999-09-15T05:15:00", 30));
         taskManager.createNewTask(new Task("task", "Task"));
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/tasks"))
-                .GET()
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        System.out.println(response.body());
 
         final List<Task> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
         }.getType());
-        //  assertNotNull(tasks, "Задачи не возвращаются");
-        //   assertEquals(1, tasks.size(), "Некорректное количество задач");
-        //  assertEquals("Test 1", tasks.get(0).getName(), "Некорректное имя задачи");
+
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+        assertEquals("task1", tasks.get(0).getName());
     }
 
     @Test
@@ -90,14 +86,12 @@ public class TaskHandlerTest {
         taskManager.createNewTask(new Task("task", "Task"));
         taskManager.createNewTask(new Task("task", "Task"));
 
-        assertEquals(2, taskManager.getAllTasks().size());
-
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/tasks"))
+                .uri(url)
                 .DELETE()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        Thread.sleep(1000);
+
         assertEquals(201, response.statusCode());
         assertTrue(taskManager.getAllTasks().size() == 0);
     }

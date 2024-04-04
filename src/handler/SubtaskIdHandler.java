@@ -1,13 +1,12 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import http.HttpTaskServer;
 import manager.TaskManager;
 import model.Subtask;
+import model.Task;
 
 import java.io.IOException;
 import java.util.List;
-
 
 public class SubtaskIdHandler extends Handler {
     int id;
@@ -38,8 +37,8 @@ public class SubtaskIdHandler extends Handler {
             case "GET":
                 handleGetRequest(httpExchange, id);
                 break;
-            case "PUT":
-                handlePutRequest(httpExchange, id);
+            case "POST":
+                handlePostRequest(httpExchange, id);
                 break;
             case "DELETE":
                 handleDeleteRequest(httpExchange, id);
@@ -50,14 +49,19 @@ public class SubtaskIdHandler extends Handler {
     }
 
     private void handleDeleteRequest(HttpExchange httpExchange, int id) throws IOException {
-        taskManager.removeByIdTask(id);
+        taskManager.removeByIdSub(id);
         sendResponse(httpExchange, 201, "Успешно");
     }
 
-    private void handlePutRequest(HttpExchange httpExchange, int id) throws IOException {
-        Subtask subtask = (Subtask) taskManager.getByIdInside(id);
+    private void handlePostRequest(HttpExchange httpExchange, int id) throws IOException {
+        String requestBody = new String(httpExchange.getRequestBody().readAllBytes(), "UTF-8");
+        Task updatedTask = gson.fromJson(requestBody, Task.class);
+        updatedTask.setId(id);
+
+        taskManager.getById(id).setStatus(updatedTask.getStatus());
+
         try {
-            taskManager.updateSub(subtask);
+            taskManager.updateSub((Subtask) taskManager.getByIdInside(id));
             sendResponse(httpExchange, 201, "Успешно");
         } catch (IllegalArgumentException e) {
             String responseBody = e.getMessage();

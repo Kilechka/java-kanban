@@ -3,6 +3,7 @@ package HttpTaskServerTests;
 import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import http.HttpTaskServer;
 import manager.Managers;
 import manager.TaskManager;
@@ -18,6 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,28 +50,29 @@ public class SubtaskHandlerTest {
 
     @Test
     public void shouldCreateSubTest() throws IOException, InterruptedException {
-        Subtask sub = new Subtask("task", "task", 1);
-        String json = gson.toJson(sub);
+        Subtask subtask = new Subtask("task", "task", 1, "1999-09-15T05:15:00", 30);
+
+        String jsonTask = gson.toJson(subtask);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json;charset=utf-8")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTask))
                 .build();
-        Thread.sleep(1000);
-
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
 
         List<Subtask> tasks = taskManager.getAllSubtasks();
 
         assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals("task", tasks.get(0).getName());
     }
 
     @Test
     public void shouldGetAllSubTest() throws IOException, InterruptedException {
-        Subtask sub = new Subtask("task", "task", 1, "15.09.1999 05:15", 30);
+        Subtask sub = new Subtask("task", "task", 1, "1999-09-15T05:15:00", 30);
         taskManager.createNewSubtask(sub);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
@@ -78,14 +81,18 @@ public class SubtaskHandlerTest {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        System.out.println(response.body());
-        assertTrue(response.body().contains("\"id\":2"));
+        final List<Subtask> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Subtask>>() {
+        }.getType());
+
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals("task", tasks.get(0).getName());
     }
 
     @Test
     public void handleDeleteRequest() throws IOException, InterruptedException {
-        taskManager.createNewSubtask(new Subtask("task", "Task", 1, "15.09.1999 05:15", 30));
-        taskManager.createNewSubtask(new Subtask("task", "Task", 1, "15.09.1999 05:59", 30));
+        taskManager.createNewSubtask(new Subtask("task", "Task", 1, "1999-09-15T05:15:00", 30));
+        taskManager.createNewSubtask(new Subtask("task", "Task", 1, "1999-09-15T05:55:00", 30));
 
         assertEquals(2, taskManager.getAllSubtasks().size());
 
@@ -94,8 +101,8 @@ public class SubtaskHandlerTest {
                 .DELETE()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
         assertEquals(201, response.statusCode());
         assertTrue(taskManager.getAllSubtasks().size() == 0);
-
     }
 }

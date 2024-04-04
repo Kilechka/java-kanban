@@ -1,8 +1,5 @@
 package HttpTaskServerTests;
 
-import adapter.LocalDateTimeAdapter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import http.HttpTaskServer;
 import manager.Managers;
 import manager.TaskManager;
@@ -16,7 +13,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +21,6 @@ public class EpicIdHandlerTest {
     private HttpTaskServer httpTaskServer;
     private HttpClient httpClient;
     static TaskManager taskManager;
-    private Gson gson;
     URI url = URI.create("http://localhost:8080/epics/1");
 
 
@@ -35,9 +30,6 @@ public class EpicIdHandlerTest {
         httpTaskServer = new HttpTaskServer(taskManager);
         httpTaskServer.start();
         httpClient = HttpClient.newHttpClient();
-        gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
     }
 
     @AfterEach
@@ -46,26 +38,7 @@ public class EpicIdHandlerTest {
     }
 
     @Test
-    public void shouldUpdateEpic() throws IOException, InterruptedException {
-        Epic epic = new Epic("task", "task");
-        epic.setStatus("DONE");
-
-        String json = gson.toJson(epic);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
-
-        Epic updatedTask = (Epic) taskManager.getById(epic.getId());
-        assertEquals("DONE", updatedTask.getStatus());
-    }
-
-    @Test
-    public void shouldDeletById() throws IOException, InterruptedException {
+    public void shouldDeleteById() throws IOException, InterruptedException {
         Epic epic = new Epic("task", "task");
         taskManager.createNewTask(epic);
 
@@ -76,6 +49,7 @@ public class EpicIdHandlerTest {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        assertEquals(response.statusCode(), 201);
         assertTrue(taskManager.getAllEpics().size() == 0);
     }
 }

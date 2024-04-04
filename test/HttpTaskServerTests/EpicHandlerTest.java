@@ -3,24 +3,22 @@ package HttpTaskServerTests;
 import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import http.HttpTaskServer;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
-import model.Task;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +28,7 @@ public class EpicHandlerTest {
     private HttpClient httpClient;
     static TaskManager taskManager;
     private Gson gson;
-
+    private URI url = URI.create("http://localhost:8080/epics");
 
     @BeforeEach
     public void beforeEach() throws IOException {
@@ -51,34 +49,23 @@ public class EpicHandlerTest {
     @Test
     public void shouldCreateEpicTest() throws IOException, InterruptedException {
         Epic epic = new Epic("task", "task");
-        String json = gson.toJson(epic);
-        URI url = URI.create("http://localhost:8080/epics");
 
+        String jsonTask = gson.toJson(epic);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json;charset=utf-8")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTask))
                 .build();
-        // Thread.sleep(1000);
-        HttpResponse<String> response = HttpClient
-                .newBuilder()
-                .connectTimeout(Duration.ofSeconds(15))
-                .proxy(ProxySelector.of(
-                        new InetSocketAddress(
-                                "1.1.1.1", 1111
-                        )
-                ))
-                .build()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-
-        //  HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(201, response.statusCode());
 
-        List<Task> tasks = taskManager.getAllTasks();
+        List<Epic> tasks = taskManager.getAllEpics();
 
         assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals("task", tasks.get(0).getName());
     }
 
     @Test
@@ -92,7 +79,12 @@ public class EpicHandlerTest {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertTrue(response.body().contains("\"id\":1"));
+        final List<Epic> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>() {
+        }.getType());
+
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals("task", tasks.get(0).getName());
     }
 
     @Test

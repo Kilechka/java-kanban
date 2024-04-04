@@ -1,7 +1,6 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import http.HttpTaskServer;
 import manager.TaskManager;
 import model.Task;
 
@@ -34,39 +33,39 @@ public class TaskIdHandler extends Handler {
         }
         switch (httpExchange.getRequestMethod()) {
             case "GET":
-                handleGetRequest(httpExchange, id);
-                break;
-            case "PUT":
-                handlePutRequest(httpExchange, id);
-                break;
-            case "DELETE":
-                handleDeleteRequest(httpExchange, id);
+                handleGetByIdRequest(httpExchange, id);
                 break;
             case "POST":
-                handleStatusRequest(httpExchange, id);
+                handlePostByIdRequest(httpExchange, id);
+                break;
+            case "DELETE":
+                handleDeleteByIdRequest(httpExchange, id);
+                break;
             default:
                 sendResponse(httpExchange, 405, "Неизвестный метод");
         }
     }
 
-    private void handleStatusRequest(HttpExchange httpExchange, int id) throws IOException {
-        Task task = taskManager.getByIdInside(id);
-        String status = new String(httpExchange.getRequestBody().readAllBytes(), "UTF-8");
-        status = gson.fromJson(status, String.class);
-        task.setStatus(status);
-        taskManager.updateTask(task);
-        sendResponse(httpExchange, 201, "Успешно");
-    }
-
-    private void handleDeleteRequest(HttpExchange httpExchange, int id) throws IOException {
+    private void handleDeleteByIdRequest(HttpExchange httpExchange, int id) throws IOException {
         taskManager.removeByIdTask(id);
         sendResponse(httpExchange, 201, "Успешно");
     }
 
-    private void handlePutRequest(HttpExchange httpExchange, int id) throws IOException {
-        Task task = taskManager.getByIdInside(id);
+    private void handlePostByIdRequest(HttpExchange httpExchange, int id) throws IOException {
+        String requestBody = new String(httpExchange.getRequestBody().readAllBytes(), "UTF-8");
+        Task updatedTask = gson.fromJson(requestBody, Task.class);
+        updatedTask.setId(id);
+        taskManager.removeByIdTask(updatedTask.getId());
+
+
+        Task existingTask = taskManager.getById(id);
+
+        existingTask.setStatus(updatedTask.getStatus());
+        existingTask.setName(updatedTask.getName());
+        existingTask.setStartTime(updatedTask.getStartTime());
+        existingTask.setDuration(updatedTask.getDuration());
         try {
-            taskManager.updateTask(task);
+            taskManager.updateTask(existingTask);
             sendResponse(httpExchange, 201, "Успешно");
         } catch (IllegalArgumentException e) {
             String responseBody = e.getMessage();
@@ -74,9 +73,11 @@ public class TaskIdHandler extends Handler {
         }
     }
 
-    public void handleGetRequest(HttpExchange httpExchange, int id) throws IOException {
+    public void handleGetByIdRequest(HttpExchange httpExchange, int id) throws IOException {
         Task task = taskManager.getById(id);
         String responseBody = gson.toJson(task);
         sendResponse(httpExchange, 200, responseBody);
     }
 }
+
+

@@ -1,8 +1,7 @@
 package HttpTaskServerTests;
 
-import adapter.LocalDateTimeAdapter;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import http.HttpTaskServer;
 import manager.Managers;
 import manager.TaskManager;
@@ -18,30 +17,27 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-// почему в idea именно в этом классе у меня пропали все кнопки запуска тестов?
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SubtaskIdHandlerTest {
     private HttpTaskServer httpTaskServer;
     private HttpClient httpClient;
     static TaskManager taskManager;
     private Gson gson;
-    URI url = URI.create("http://localhost:8080/subtasks/2");
-
+    private URI url = URI.create("http://localhost:8080/subtasks/2");
 
     @BeforeEach
     public void beforeEach() throws IOException {
         taskManager = Managers.getDefault();
-        taskManager.createNewEpic(new Epic("ep", "ep"));
         httpTaskServer = new HttpTaskServer(taskManager);
-        httpTaskServer.start();
         httpClient = HttpClient.newHttpClient();
-        gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
+        gson = HttpTaskServer.getGson();
+        httpTaskServer.start();
+        taskManager.createNewEpic(new Epic("task", "task"));
+        taskManager.createNewSubtask(new Subtask("task", "task", 1));
     }
 
     @AfterEach
@@ -50,24 +46,54 @@ public class SubtaskIdHandlerTest {
     }
 
     @Test
-    private void shouldupdateSub() throws IOException, InterruptedException {
-        Subtask subtask = new Subtask("task", "task", 1, "15.09.1999 05:15", 30);
-        taskManager.createNewTask(subtask);
-
-        subtask.setStatus("DONE");
-
-        String json = gson.toJson(subtask);
-
+    public void shouldDeleteSub() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .DELETE()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(201, response.statusCode());
+
+        assertTrue(taskManager.getAllSubtasks().size() == 0);
+    }
+
+    @Test
+    public void shouldGetSubByIdEpic() throws IOException, InterruptedException {
+        URI uri = URI.create("http://localhost:8080/subtasks/1");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+
+        final List<Subtask> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Subtask>>() {
+        }.getType());
+
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals("task", tasks.get(0).getName());
+    }
+
+    @Test
+    public void shouldUpdateSub() throws IOException, InterruptedException {
+        Task task = taskManager.getById(2);
+        task.setStatus("DONE");
+        task.setName("New Task");
+        String jsonTask = gson.toJson(task);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json;charset=utf-8")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTask))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
 
-        Task updatedTask = taskManager.getById(subtask.getId());
-        assertEquals("DONE", updatedTask.getStatus());
+        assertEquals("DONE", taskManager.getByIdInside(2).getStatus());
+        assertEquals("New Task", taskManager.getByIdInside(2).getName());
     }
 }

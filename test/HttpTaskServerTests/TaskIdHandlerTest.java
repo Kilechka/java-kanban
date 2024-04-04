@@ -27,6 +27,7 @@ public class TaskIdHandlerTest {
     static TaskManager taskManager;
     private Gson gson;
     URI url = URI.create("http://localhost:8080/tasks/1");
+    Task task;
 
     @BeforeEach
     public void beforeEach() throws IOException {
@@ -37,6 +38,8 @@ public class TaskIdHandlerTest {
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
+        task = new Task("task", "task");
+        taskManager.createNewTask(task);
     }
 
     @AfterEach
@@ -46,9 +49,6 @@ public class TaskIdHandlerTest {
 
     @Test
     public void shouldHandleGetRequestTest() throws IOException, InterruptedException {
-        Task task = new Task("task", "task", "15.09.1999 05:15", 30);
-        taskManager.createNewTask(task);
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .GET()
@@ -61,21 +61,18 @@ public class TaskIdHandlerTest {
 
     @Test
     public void shouldUpdateTask() throws IOException, InterruptedException {
-        Task task = new Task("task", "task", "15.09.1999 05:15", 30);
-        taskManager.createNewTask(task);
-
+        Task task = taskManager.getById(1);
         task.setStatus("DONE");
-
-        String json = gson.toJson(task);
+        String jsonTask = gson.toJson(task);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .header("Content-Type", "application/json;charset=utf-8")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTask))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
 
         Task updatedTask = taskManager.getById(task.getId());
         assertEquals("DONE", updatedTask.getStatus());
@@ -83,15 +80,13 @@ public class TaskIdHandlerTest {
 
     @Test
     public void shouldDeleteById() throws IOException, InterruptedException {
-        Task task = new Task("task", "task", "15.09.1999 05:15", 30);
-        taskManager.createNewTask(task);
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
                 .DELETE()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(201, response.statusCode());
 
         assertTrue(taskManager.getAllTasks().size() == 0);
     }

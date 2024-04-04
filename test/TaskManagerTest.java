@@ -20,16 +20,16 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @BeforeEach
     public void beforeEach() {
         manager = (T) Managers.getDefault();
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 00:00", 30));
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 01:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T05:15:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T05:46:00", 30));
         manager.createNewEpic(new Epic("Test addNewTask", "Test addNewTask description"));
-        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "15.09.1999 02:00", 30));
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "1999-09-16T05:15:00", 30));
     }
 
     @Test
     public void shouldAddNewTask() {
         manager.deleteAllTasks();
-        Task task = new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 03:00", 30);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", "1999-10-15T05:15:00", 30);
         manager.createNewTask(task);
         final Task savedTask = manager.getById(task.getId());
         assertNotNull(savedTask, "Задача не найдена");
@@ -72,7 +72,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void shouldNotCreateWithNonExistenseId() {
         manager.deleteAllSubtasks();
-        Subtask sub = new Subtask("Sub", "Sub description", 3, "15.09.1999 03:00", 30);
+        Subtask sub = new Subtask("Sub", "Sub description", 3, "1999-09-15T03:00:00", 30);
         assertNull(sub.getId(), "Подзадача с несуществующим id эпика была создана");
         boolean getSub = manager.getAllSubtasks().size() == 0;
         assertTrue(getSub, "Подзадача с несуществующим id эпика была создана");
@@ -80,7 +80,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldNotClashInsideManager() {
-        Subtask sub = new Subtask("Sub", "Sub description", 3, "15.09.1999 03:00", 30);
+        Subtask sub = new Subtask("Sub", "Sub description", 3, "1999-09-15T03:00:00", 30);
         manager.createNewSubtask(sub);
         assertFalse(sub.getId() == 3, "Мы задали id 3 при создании подзадачи. Этот id был ей присвоен");
     }
@@ -96,9 +96,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void shouldUpdateStatusEpic() {
         Epic epic = new Epic("Epic", "Epic description");
         manager.createNewEpic(epic);
-        Subtask sub = new Subtask("Sub", "Sub description", epic.getId(), "15.09.1999 03:00", 30);
+        Subtask sub = new Subtask("Sub", "Sub description", epic.getId(), "1999-09-15T03:00:00", 30);
         manager.createNewSubtask(sub);
-        Subtask sub1 = new Subtask("Sub", "Sub description", epic.getId(), "15.09.1999 04:00", 30);
+        Subtask sub1 = new Subtask("Sub", "Sub description", epic.getId(), "1999-09-15T04:00:00", 30);
         manager.createNewSubtask(sub1);
 
         assertEquals("NEW", epic.getStatus());
@@ -134,7 +134,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         Epic epic = new Epic("Epic", "Epic description");
         manager.createNewEpic(epic);
-        Subtask sub = new Subtask("Sub", "Sub description", epic.getId(), "01.09.1999 07:00", 30);
+        Subtask sub = new Subtask("Sub", "Sub description", epic.getId(), "1999-09-15T07:00:00", 30);
         manager.createNewSubtask(sub);
         sub.setStatus("DONE");
         manager.updateSub(sub);
@@ -194,7 +194,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldAddTimeAndDurationToEpic() {
-        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "16.09.1999 00:00", 30));
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "1999-09-16T00:00:00", 30));
         assertEquals(LocalDateTime.of(1999, 9, 15, 2, 0), manager.getById(3).getStartTime());
         assertEquals(60, manager.getById(3).getDuration());
     }

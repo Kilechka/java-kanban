@@ -16,10 +16,10 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @BeforeEach
     public void beforeEach() {
         manager = new InMemoryTaskManager();
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 00:00", 30));
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 01:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T00:00:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T01:00:00", 30));
         manager.createNewEpic(new Epic("Test addNewTask", "Test addNewTask description"));
-        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "15.09.1999 02:00", 30));
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "1999-09-15T02:00:00", 30));
     }
 
     @Test
@@ -34,7 +34,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     public void shouldAddTimeAndDurationToEpic() {
-        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "16.09.1999 00:00", 30));
+        manager.createNewSubtask(new Subtask("Test addNewTask", "Test addNewTask description", 3, "1999-09-16T00:00:00", 30));
         assertEquals(LocalDateTime.of(1999, 9, 15, 2, 0), manager.getById(3).getStartTime());
         assertEquals(60, manager.getById(3).getDuration());
         assertEquals(LocalDateTime.of(1999, 9, 16, 00, 30), manager.getById(3).getEndTime());
@@ -43,30 +43,30 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @Test
     public void shouldNotIntersect() {
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:00", 30));
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T02:00:00", 30));
         }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:00
 
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:29", 30));
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T02:29:00", 30));
         }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:29
 
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "14.09.1999 23:30", 30));
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-14T23:30:00", 30));
         }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 00:00, такса 2 - 23:30
 
         assertDoesNotThrow(() -> {
-            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "14.09.1999 23:29", 30));
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-14T23:29:00", 30));
         }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 00:00, такса 2 - 23:29
 
         assertDoesNotThrow(() -> {
-            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 02:31", 30));
+            manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T02:31:00", 30));
         }, "Нельзя создать задачу, которая пересекается с другими задачами"); // таска 1 - 02:00, такса 2 - 02:31
     }
 
     @Test
     public void shouldSort() {
         manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description"));
-        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "15.09.1999 06:00", 30));
+        manager.createNewTask(new Task("Test addNewTask", "Test addNewTask description", "1999-09-15T06:00:00", 30));
         List<Task> sortTasks = manager.getPrioritizedTasks();
         assertEquals(1, sortTasks.get(0).getId()); // 00:00
         assertEquals(2, sortTasks.get(1).getId()); // 01:00

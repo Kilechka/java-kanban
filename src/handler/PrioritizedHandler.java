@@ -1,7 +1,6 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import http.HttpTaskServer;
 import manager.TaskManager;
 import model.Task;
 
@@ -16,7 +15,7 @@ public class PrioritizedHandler extends Handler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestMethod() == "GET") {
+        if (exchange.getRequestMethod().equals("GET")) {
             List<Task> prioritizedList = taskManager.getPrioritizedTasks();
             String responseBody = gson.toJson(prioritizedList);
             sendResponse(exchange, 200, responseBody);

@@ -1,7 +1,6 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import http.HttpTaskServer;
 import manager.TaskManager;
 import model.Task;
 
@@ -16,7 +15,7 @@ public class HistoryHandler extends Handler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestMethod() == "GET") {
+        if (exchange.getRequestMethod().equals("GET")) {
             List<Task> history = taskManager.getHistory();
             String responseBody = gson.toJson(history);
             sendResponse(exchange, 200, responseBody);
