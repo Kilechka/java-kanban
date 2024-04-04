@@ -24,11 +24,8 @@ public class HttpTaskServer {
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TaskHandler(taskManager));
-        httpServer.createContext("/tasks/{id}", new TaskIdHandler(taskManager));
         httpServer.createContext("/epics", new EpicHandler(taskManager));
-        httpServer.createContext("/epics/{id}", new EpicIdHandler(taskManager));
         httpServer.createContext("/subtasks", new SubtaskHandler(taskManager));
-        httpServer.createContext("/subtasks/{id}", new SubtaskIdHandler(taskManager));
         httpServer.createContext("/history", new HistoryHandler(taskManager));
         httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
         httpServer.start();

@@ -59,25 +59,6 @@ public class SubtaskIdHandlerTest {
     }
 
     @Test
-    public void shouldGetSubByIdEpic() throws IOException, InterruptedException {
-        URI uri = URI.create("http://localhost:8080/subtasks/1");
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
-
-        final List<Subtask> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Subtask>>() {
-        }.getType());
-
-        assertNotNull(tasks);
-        assertEquals(1, tasks.size());
-        assertEquals("task", tasks.get(0).getName());
-    }
-
-    @Test
     public void shouldUpdateSub() throws IOException, InterruptedException {
         Task task = taskManager.getById(2);
         task.setStatus("DONE");

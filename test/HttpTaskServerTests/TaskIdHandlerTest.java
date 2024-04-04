@@ -28,6 +28,7 @@ public class TaskIdHandlerTest {
     private Gson gson;
     URI url = URI.create("http://localhost:8080/tasks/1");
     Task task;
+    Task task1;
 
     @BeforeEach
     public void beforeEach() throws IOException {
@@ -38,7 +39,7 @@ public class TaskIdHandlerTest {
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
-        task = new Task("task", "task");
+        task = new Task("task", "task", "1999-09-15T06:00:00", 30);
         taskManager.createNewTask(task);
     }
 
@@ -55,8 +56,10 @@ public class TaskIdHandlerTest {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        Task task = gson.fromJson(response.body(), Task.class);
+
         assertEquals(200, response.statusCode());
-        assertTrue(response.body().contains("\"id\":1"));
+        assertTrue(task.getId() == 1);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class TaskIdHandlerTest {
 
         assertEquals(201, response.statusCode());
 
-        Task updatedTask = taskManager.getById(task.getId());
+        Task updatedTask = taskManager.getByIdInside(task.getId());
         assertEquals("DONE", updatedTask.getStatus());
     }
 
